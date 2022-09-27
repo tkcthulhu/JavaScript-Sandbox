@@ -1,74 +1,34 @@
-let randomNumber = Math.floor(Math.random() * 100) + 1;
-
-const guesses = document.querySelector('.guessess');
-const lastResult = document.querySelector('.lastResult');
-const lowOrHi = document.querySelector('.lowOrHi');
-
-const guestSubmit = document.querySelector('.guestSubmit');
-const guestField = document.querySelector('.guestField');
-
-let guestCount = 1;
-let resetButton;
-
-function checkGuess() {
-    const userGuess = Number(guessField.value);
-    if (guessCount === 1) {
-      guesses.textContent = 'Previous guesses: ';
-    }
-    guesses.textContent += `${userGuess} `;
+function initializePage() {
+  startButton = document.createElement('button');
+  const body = document.querySelector('body');
+  info = document.createElement('div');
+  input = document.createElement('input')
+  startButton.textContent = 'Cleeck mee';
   
-    if (userGuess === randomNumber) {
-      lastResult.textContent = 'Congratulations! You got it right!';
-      lastResult.style.backgroundColor = 'green';
-      lowOrHi.textContent = '';
-      setGameOver();
-    } else if (guessCount === 10) {
-      lastResult.textContent = '!!!GAME OVER!!!';
-      lowOrHi.textContent = '';
-      setGameOver();
-    } else {
-      lastResult.textContent = 'Wrong!';
-      lastResult.style.backgroundColor = 'red';
-      if (userGuess < randomNumber) {
-        lowOrHi.textContent = 'Last guess was too low!';
-      } else if (userGuess > randomNumber) {
-        lowOrHi.textContent = 'Last guess was too high!';
-      }
-    }
+  body.appendChild(input)
+  body.appendChild(startButton);
+  body.appendChild(info)
   
-    guessCount++;
-    guessField.value = '';
-    guessField.focus();
+  startButton.addEventListener('click', () => getData('https://rickandmortyapi.com/api/character'));
+  startButton.id = 'stuff button';
+  info.id = 'stuff';
+  input.type = 'number';
+  input.id = 'input'
+}
+
+let startButton = document.getElementById('stuff button');
+let info = document.getElementById('stuff')
+let input = document.getElementById('input')
+
+async function getData(url) {
+  try {
+    const response = await axios.get(url);
+    const userInput = input.value;
+    info.innerText = response.data.results[userInput].name;
+    console.log(response.data.results);
+  } catch (error) {
+    console.log(error);
   }
+}
 
-guessSubmit.addEventListener('click', checkGuess);
-
-function setGameOver() {
-    guessField.disabled = true;
-    guessSubmit.disabled = true;
-    resetButton = document.createElement('button');
-    resetButton.textContent = 'Start new game';
-    document.body.append(resetButton);
-    resetButton.addEventListener('click', resetGame);
-  }
-
-function resetGame() {
-    guessCount = 1;
-  
-    const resetParas = document.querySelectorAll('.resultParas p');
-    for (const resetPara of resetParas) {
-      resetPara.textContent = '';
-    }
-  
-    resetButton.parentNode.removeChild(resetButton);
-  
-    guessField.disabled = false;
-    guessSubmit.disabled = false;
-    guessField.value = '';
-    guessField.focus();
-  
-    lastResult.style.backgroundColor = 'white';
-  
-    randomNumber = Math.floor(Math.random() * 100) + 1;
-  }
-  
+initializePage();
